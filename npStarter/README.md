@@ -3,6 +3,7 @@
 == What? ==
 
 npStarter is a very basic init system for the raspberrypi, created to have full control of an otherwise fully functioning Raspbian Linux system.
+It replaces the systemd init system with its own setup routines and can also return control back to systemd for a full "normal" system.
 
 == Why? ==
 

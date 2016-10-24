@@ -20,19 +20,9 @@
 int i;
 char cmd[255];
 
-int enablePins[] = {4};
 int bootToSystemPin = 18;
 
 volatile int runFullSystem = 0;
-
-// the event counter 
-volatile int eventCounter = 0;
-
-// -------------------------------------------------------------------------
-// myInterrupt:  called every time an event occurs
-void myInterrupt(void) {
-	eventCounter++;
-}
 
 static void catch_function(int signo) {
 	runFullSystem = 1;
