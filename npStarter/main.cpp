@@ -151,13 +151,11 @@ int main ( int argc, char *argv[] )
 		system("ifconfig eth2 up > /dev/null");
 		system("ifconfig eth2:1 192.168.1.107/24 > /dev/null");
 
-                system("ifconfig wlan0 up > /dev/null");
-                system("ifconfig wlan0:1 192.168.42.1/24 > /dev/null");
+		system("ifconfig wlan0 up > /dev/null");
+		system("ifconfig wlan0:1 192.168.42.1/24 > /dev/null");
 
 		//printf("starting getty");
 //		runInBackground("/sbin/getty --noclear 38400 tty1 > /dev/null");
-		
-//                runInBackground("/usr/sbin/hostapd /etc/hostapd/hostapd.conf > /dev/null");
 
 		runInBackground("/usr/sbin/sshd -f /etc/ssh/sshd_config > /dev/null");
 	}
