@@ -30,7 +30,7 @@ cd /root/npStarter
 cmake .
 make -j5
 
-Then overwrite /usr/init with /root/npStarter/init, this replaces npStarter as the init system, instead of systemd.
+Then overwrite /sbin/init with /root/npStarter/init, this replaces npStarter as the init system, instead of systemd.
 
 == Usage ==
 
