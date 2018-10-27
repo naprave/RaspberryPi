@@ -28,6 +28,10 @@ static void catch_function(int signo) {
 	runFullSystem = 1;
 }
 
+static void child_function(int signo) {
+	wait();
+}
+
 int runInBackground(const char* cmd) {
 	pid_t pid;
 	pid = fork();
@@ -35,6 +39,7 @@ int runInBackground(const char* cmd) {
 	{
         // child process
 		system(cmd);
+		wait();
 		exit(1);
 	} else if (pid < 0) {
         // fork failed
@@ -52,6 +57,9 @@ void setupBasicSystem() {
 	
 	mkdir("/dev/shm", 0);
  	mount("tmpfs", "/dev/shm", "tmpfs", 0, "size=128M");
+//	mount("tmpfs", "/var/run", "tmpfs", 0, "size=128M");
+//	mount("tmpfs", "/var/lock", "tmpfs", 0, "size=128M");
+//	mount("tmpfs", "/dev/shm", "tmpfs", 0, "size=128M");
 //  	system("/bin/mount -t tmpfs tmpfs /dev/shm -o size=128M");
 	mkdir("/dev/pts", 0);
 	
@@ -67,6 +75,9 @@ void setupBasicSystem() {
  	system("modprobe uio_pdrv_genirq");
  	system("modprobe ch341");
 	system("modprobe snd-usb-audio");
+
+        system("modprobe snd-seq-midi");
+
 	system("modprobe ftdi_sio");
 	system("modprobe libphy");
 	system("modprobe asix");
@@ -74,6 +85,15 @@ void setupBasicSystem() {
 
 	system("modprobe brcmfmac");
 	system("modprobe uvcvideo");
+
+	system("modprobe i2c-bcm2708");
+	system("modprobe i2c-dev");
+	system("modprobe rtc-ds1307");
+
+	system("modprobe ipv6");
+
+//	system("/sbin/hwclock -s");
+
 /*/	
  	system("/bin/mount / -o remount,rw");
 	system("/sbin/udevd --daemon");
@@ -85,7 +105,7 @@ void setupBasicSystem() {
 	system("setterm -cursor off;");
 	system("clear");
 
-	runInBackground("/usr/bin/php -S 0.0.0.0:80 -t /opt/naprave/app/www/ > /dev/null");
+//	runInBackground("/usr/bin/php -S 0.0.0.0:80 -t /opt/naprave/app/www/ > /dev/null");
 
 //	sleep(5);
 //	mount("/dev/sda1", "/data", "auto", 0, "ro");
@@ -94,7 +114,7 @@ void setupBasicSystem() {
 	system("/bin/mount /dev/sda2 /data3 -o ro");
 	system("/bin/mount /dev/sda /data4 -o ro");
 
- 	system("alsactl restore");
+ 	system("/usr/sbin/alsactl -L restore");
 	system("amixer sset PCM 100%");
 }
 
@@ -103,6 +123,10 @@ bool doInit;
 int main ( int argc, char *argv[] )
 {
 	if (signal(SIGINT, catch_function) == SIG_ERR) {
+		//return EXIT_FAILURE;
+	}
+
+	if (signal(SIGCHLD, SIG_IGN) == SIG_ERR) {
 		//return EXIT_FAILURE;
 	}
 
@@ -151,11 +175,13 @@ int main ( int argc, char *argv[] )
 		system("ifconfig eth2 up > /dev/null");
 		system("ifconfig eth2:1 192.168.1.107/24 > /dev/null");
 
-		system("ifconfig wlan0 up > /dev/null");
-		system("ifconfig wlan0:1 192.168.42.1/24 > /dev/null");
+                system("ifconfig wlan0 up > /dev/null");
+                system("ifconfig wlan0:1 192.168.42.1/24 > /dev/null");
 
 		//printf("starting getty");
 //		runInBackground("/sbin/getty --noclear 38400 tty1 > /dev/null");
+		
+//                runInBackground("/usr/sbin/hostapd /etc/hostapd/hostapd.conf > /dev/null");
 
 		runInBackground("/usr/sbin/sshd -f /etc/ssh/sshd_config > /dev/null");
 	}
